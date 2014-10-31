@@ -1,0 +1,241 @@
+
+
+body{
+  transition: opacity .2s;
+  margin:0;
+	// background:#c08;
+  font-family: sans-serif;
+  text-align: center;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.connected body{
+    opacity: 1;
+}
+.disconnected body{
+    opacity: 0;
+}
+
+h1{
+    font-family: futura
+}
+
+#vote{
+  background:#85C6CF;
+  width:100%;
+  height:200px;
+  box-shadow: 0 0 5px rgba(53, 53, 53, 0.4);
+}
+
+#vote.active{
+ background:#08f;
+ box-shadow: inset 0 0 9px rgba(5, 5, 5, 0.53);
+}
+// #tw-form{
+//     display: none;
+// }
+
+#tw-input{
+    margin:auto;
+    margin-top:1em;
+    margin-bottom:1em;
+    width:80%;
+    display:block;
+    font-size: 20px;
+    text-align: center;
+    text-decoration: none;
+    z-index: 1;
+    padding:.5em;
+    color:#292f33;
+}
+#tw-save{
+    // color:#fff;
+    background: #55acee;
+    color: #292f33;
+    border: none;
+    padding: 1em 3em;
+    font-size: 16px;
+    margin: 0;
+}
+label{
+    margin: 1em;
+    display: block;
+    color: #292f33;
+}
+
+#tw-handle {
+    font-size: 2em;
+    color: #66757f;
+}
+
+button,input{
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+
+.section{
+    display: none;
+}
+.section.on{
+    display: block;
+}
+
+
+
+
+
+/* Vis part */
+
+.avatars{
+    position: absolute;
+}
+.avatar{
+    display: block;
+    position: absolute;
+    background-size: cover;
+    border-radius:100%;
+    width:20px;
+    height:20px;
+    left:-10px;
+    top:-10px;
+}
+line {
+stroke: rgba(0, 136, 255, 0.5);
+stroke-width: 3px;
+}
+
+
+
+
+/*! Waves v0.5.3 - http://fian.my.id/Waves - Copyright 2014 Alfiana E. Sibuea and other contributors - Released under the MIT license - https://github.com/fians/Waves/blob/master/LICENSE  */
+
+.transition (@transition) {
+    -webkit-transition: @transition;  
+    -moz-transition: @transition; 
+    -o-transition: @transition;
+    transition: @transition;  
+}
+
+.transform(@string) {
+    -webkit-transform: @string;
+    -moz-transform: @string;
+    -ms-transform: @string;
+    -o-transform: @string;
+    transform: @string;
+}
+
+.box-shadow(@shadow) {
+    -webkit-box-shadow:  @shadow;
+    box-shadow: @shadow;
+}
+
+.waves-effect {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    .transition(all .3s ease-out);
+    
+    .waves-ripple {
+        position: absolute;
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        opacity: 0;
+        background-color: rgba(0, 0, 0, 0.2);
+        .transition(all 0.5s ease-out);
+        .transform(scale(0));
+    }
+
+    &.waves-light .waves-ripple {
+        background-color: rgba(255, 255, 255, 0.4);
+    }
+}
+
+.waves-notransition {
+    -webkit-transition: none !important;  
+    -moz-transition: none !important; 
+    -o-transition: none !important;
+    transition: none !important; 
+}
+
+.waves-button, 
+.waves-icon {
+    .transform(translateZ(0));
+    -webkit-image-mask: -webkit-radial-gradient(circle, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0));
+}
+
+.waves-button,
+.waves-button:hover,
+.waves-button:visited,
+.waves-button:link,
+.waves-button-input {
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    color: inherit;
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 14px;
+    text-align: center;
+    text-decoration: none;
+    z-index: 1;
+}
+
+.waves-button {
+    padding: 10px 15px;
+    // border-radius: 2px;
+}
+
+.waves-button-input {
+    margin: 0;
+    padding: 10px 15px;
+}
+
+.waves-input-wrapper {
+    // border-radius: 2px;
+    vertical-align: bottom;
+
+    &.waves-button {
+        padding: 0;
+    }
+
+    .waves-button-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+}
+
+.waves-circle {
+    text-align: center;
+    width: 2.5em;
+    height: 2.5em;
+    line-height: 2.5em;
+    border-radius: 50%;
+}
+
+.waves-float {
+    -webkit-mask-image: none;
+    .box-shadow(0px 1px 1.5px 1px rgba(0, 0, 0, 0.12));
+
+    &:active {
+        .box-shadow(0px 8px 20px 1px rgba(0, 0, 0, 0.30));
+    }
+}
+
+.waves-block {
+    display: block;
+}
+
+/* Firefox Bug: link not triggered */
+a.waves-effect .waves-ripple {
+    z-index: -1;
+}

@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AYB14</title>
+  <link rel="stylesheet" type="text/css" href="base.css">
+  <style type="text/css">
+    svg{
+      outline: 1px solid #ddd;
+    }
+    circle{
+      transition: fill .25s;
+    }
+    line.guide{
+      stroke:rgba(0, 168, 13, 0.13)
+    }
+    line.link {
+      stroke: rgba(0, 136, 255, 0.5);
+      stroke-width: 3px;
+    }
+    .cross{
+      stroke-width:3px;
+      stroke:#08f;
+      transition: transform 1s;
+    }
+
+    text.title{
+      font-family: Din Alternate;
+      font-size: 40px;
+      fill: #00A3FF;
+    }
+
+    g.label text, text.vlabel {
+      font-family: Din Alternate;
+      font-size: 40px;
+      fill: #000;
+    }
+    g.label line{
+      stroke: silver;
+    }
+
+    path.cross{
+      transition: stroke .5s;
+    }
+
+    .avatar{
+      /*background:url(http://benjaminbenben.com/me.jpg);*/
+      height:20px;
+      width:20px;
+      left:-10px;
+      top:-10px;
+      position: absolute;
+      background-size:cover;
+      border-radius:100%;
+    }
+
+    .avatar.trans{
+      transition: transform .2s;
+    }
+    body.error{
+      background:#ffeed1;
+    }
+    body, h1{
+      margin:0;
+    }
+    #debug{
+      /*display:none;*/
+      padding:2em;
+    }
+
+    #visualisation{
+      position: absolute;
+    }
+
+    #url{
+      position:absolute;
+      vertical-align: middle;
+      margin-top: 120px;
+      font-size: 77px;
+      font-family: futura;
+      color: #000;
+      /*text-shadow: #fff 0 0 3px;*/
+      background: rgba(255, 255, 255, 0.73);
+padding: 0.25em;
+right:0;
+opacity: 0;
+    }
+
+    pre{
+      position: absolute;
+      font-size: 16px;
+      width: 960px;
+      height: 540px;
+      overflow: hidden;
+      margin: 0;
+      color: #000;
+    }
+
+    #talk li:after{
+      content: attr(data-slide);
+      font-family: monospace;
+    }
+    #talk li.active{
+      background-color:#08f;
+    }
+  </style>
+</head>
+<body>
+  <div id="debug">
+    <h1>AYB14</h1>
+
+
+      <ol id="talk">
+        <li data-slide="vis_text()"></li>
+        <li data-slide="vis_text_d3()"></li>
+        <li data-slide="vis_circle()"></li>
+
+
+        <li data-slide="question('Is this thing on?','hi')"></li>
+        <li data-slide="question('Is this your first AYB?','newbie')"></li>
+        <li data-slide="question('Have you been to every AYB?','veteran')"></li>
+
+        <li data-slide="question('*Relational*, Document, Graph','rel')"></li>
+        <li data-slide="question('Relational, *Document*, Graph','doc')"></li>
+        <li data-slide="question('Relational, Document, *Graph*','graph')"></li>
+
+        <li data-slide="question('Sean Connery is sitting at his desk…','desk')"></li>
+        <li data-slide="question('Does Sean like herbs?…','herbs')"></li>
+        <li data-slide="question('Why doesn’t Sean like baby lobsters?','lobsters')"></li>
+
+        <li data-slide="question('*JS*, Python, Ruby, PHP','js')"></li>
+        <li data-slide="question('JS, *Python*, Ruby, PHP','python')"></li>
+        <li data-slide="question('JS, Python, *Ruby*, PHP','ruby')"></li>
+        <li data-slide="question('JS, Python, Ruby, *PHP*','php')"></li>
+
+        <li data-slide="question('JavaScript Adventure Club?','jsac')"></li>
+        <li data-slide="question('Who likes to party?','party')"></li>
+
+        <li data-slide="vis_timeline()"></li>
+        <li data-slide="vis_labelled()"></li>
+        <li data-slide="vis_bars()"></li>
+        <li data-slide="vis_comparison()"></li>
+        <li data-slide="vis_twitter()"></li>
+
+        <li data-slide="request_twitter_handles()"></li>
+        <li data-slide="vis_twitter_followers()"></li>
+        <li data-slide="if(twitter_step) twitter_step()"></li>
+        <li data-slide="if(twitter_step) twitter_step()"></li>
+        <li data-slide="if(twitter_step) twitter_step()"></li>
+        <li data-slide="if(twitter_step) twitter_step()"></li>
+        <li data-slide="vis_twitter_final()"></li>
+        <li data-slide="connect_firebase()"></li>
+        <li data-slide="connect_firebase_public()"></li>
+
+      </ol>
+
+      <button onclick="nextSlide()">NEXT</button>
+
+      <script type="text/javascript">
+
+
+        var nextSlide = (function(){
+          var slides = document.querySelectorAll('#talk li');
+          var i = 0;
+
+          return function(){
+            [].forEach.call(slides, function(slide,j){
+              if(i === j){
+                slide.classList.add('active');
+
+                eval(slide.dataset.slide || '')
+              } else {
+                slide.classList.remove('active') 
+              }
+            });
+            i++;
+          }
+        })();
+
+
+        document.addEventListener('keydown', function(e){
+          console.log(e.keyCode)
+          if(e.keyCode === 33 || e.keyCode === 80){
+            // pageup or n
+          }
+          if(e.keyCode === 34 || e.keyCode === 78){
+            // pagedown
+            e.preventDefault();
+            nextSlide();
+          }
+        }, false)
+
+
+
+
+      </script>
+
+
+    <div>
+
+      <button onclick="reset()">RESET</button>
+      <button onclick="document.getElementById('debug').style.display = 'none'">Hide Debug</button>
+
+      <br  />
+
+
+      <button onclick="debug.addClients(20)">Add 20</button>
+      <button onclick="debug.vote(0.5)">vote (0.5)</button>
+      <button onclick="debug.vote(0.2)">vote (0.2)</button>
+      <button onclick="debug.assign_handles()">assign handles</button>
+      <button onclick="dev_script()">Dev Script</button>
+
+      <br  />
+
+      questions:
+      <button onclick="question('Is this thing on?','hi')">Hello</button>
+      <button onclick="question('CouchDB?','couch')">Couch</button>
+      <button onclick="question('PouchDB?','pouch')">Pouch</button>
+      <button onclick="question('&hearts;, but never used','<3')">never used</button>
+      <button onclick="question('Who &hearts; JavaScript?','js')">JS</button>
+      <button onclick="question('Who &hearts; Python?','py')">Python</button>
+      <button onclick="question('Who &hearts; PHP?','py')">PHP</button>
+      <button onclick="question('Jokes','jokes')">Jokes</button>
+      <button onclick="question('C 4 lyfe?','C')">C</button>
+      <button onclick="question('Who likes to party?','party')">Party</button>
+
+      <br />
+
+      vis:
+      <button onclick="vis_text()">text</button>
+      <button onclick="vis_text_d3()">textd3</button>
+      <button onclick="vis_circle()">circles</button>
+      <button onclick="vis_timeline()">timeline</button>
+      <button onclick="vis_labelled()">labelled</button>
+      <button onclick="vis_bars()">bars</button>
+      <button onclick="vis_comparison()">comparison</button>
+      <button onclick="vis_twitter()">twitter</button>
+      <button onclick="request_twitter_handles()">request (50) handles</button>
+      <button onclick="vis_twitter_followers()">twitter followers</button>
+      <button onclick="if(twitter_step) twitter_step()">twitter followers step</button>
+      <button onclick="vis_twitter_final()">twitter final</button>
+      <button onclick="connect_firebase()">connectFB</button>
+      <button onclick="connect_firebase_public()">connectFB Public</button>
+
+
+
+      <br />
+
+      remote:
+      <button onclick="remote_section('start')">start</button>
+      <button onclick="remote_section('twitterForm')">twitter input</button>
+      <button onclick="remote_section('twitterVis')">twitter vis</button>
+
+      <button onclick="remote_section('blank')">blank</button>
+
+
+    </div>
+  </div>
+
+
+  <div id="visualisation">
+    <pre id="json-intro">[]</pre>
+
+    <h1 id="url">bit.ly/aybstuff</h1>
+  </div>
+
+
+  <script src="js/lib/d3.js"></script>
+  <script src="js/lib/pubnub.js"></script>
+  <script src="js/lib/reqwest.js"></script>
+  <script src="js/lib/firebase-debug.js"></script>
+
+  <script type="text/javascript">
+
+
+function reset(){
+  ayb.child('users').remove();
+  ayb.child('links').remove();
+  remote_section('start')
+}
+
+
+
+(window.onresize = function(){
+ document.getElementById('visualisation').style.zoom = window.innerWidth/960 
+})();
+
+
+var ayb = new Firebase("https://your-firebase.firebaseio.com/");
+ayb.authWithCustomToken("FIREBASE_AUTH_TOKEN", function(error, authData) {
+  if (error) {
+    console.log("Login Failed!", error);
+  } else {
+    console.log("Login Succeeded!", authData);
+  }
+});
+
+
+    // uuid->state of all connected clients
+    var clients = [
+          /*{
+            id: uuid,
+            events: [['join', X], ['vote', Y], ['vote', Y1]],
+            active: true, // alive
+            voted:  true, // has voted
+            state: {
+              twitter: @benjaminbenben
+            },
+
+            // stuff from d3
+            x:…
+            y:…
+          }*/
+          
+          
+        ],
+        questions = [],
+        voteToggle = true, // whether votes should be toggled, or stored
+        ignoreMessages,
+        /*
+          {
+            text: "Who likes bacon?",
+            timestamp: 12345678
+          }
+        */
+
+        client_observer = function(fn){} //todo
+
+
+
+    // -----
+    var pubnub, 
+      self, // uuid of this client
+      // channel = 'ayb-votes',
+      channel_public = 'ayb-public',
+      channel_votes  = 'ayb-votes',
+      lastTime; // used to reduce event complexity, not for ui
+
+
+    var time = function(start){
+      return function(stamp){
+        stamp = parseInt(stamp, 10);
+        start = start || stamp;
+
+        if(stamp < start){console.error("weird time error")}
+
+        return (lastTime = stamp - start);
+      }
+    }()
+
+    
+
+    // possibly retrive cached uuid
+    sessionStorage.setItem('uuid',
+      self = sessionStorage.getItem('uuid') || PUBNUB.uuid()
+    )
+
+    // reqwest('/.env')
+    // .then(init)
+
+    // function init(env){
+
+    pubnub = PUBNUB.init({
+      publish_key   : 'PUBNUB_PUB_KEY',
+      subscribe_key : 'PUBNUB_SUB_KEY',
+      uuid          : self
+    })
+
+    // set initial time (not totally needed)
+    pubnub.time(time)
+
+    pubnub.subscribe({
+      channel  : [channel_public,channel_votes].join(','),
+      message  : handle_message,
+      presence : handle_presence,
+      connect  : function(m){console.log("connected",m)},
+      state    : {some:'state', rnd: Math.random()},
+    })
+
+    pubnub.here_now({
+      channel  : channel_public,
+      callback : handle_here_now
+    });
+
+
+    // not sure why this was needed, but I'm leaving it in
+    setInterval(function(){pubnub.publish({channel:'partyping',message:{m:Math.random()}})},6000)
+
+    // }
+
+    function handle_here_now(m){
+      m.uuids.forEach(function(id){
+        if(id === self) return;
+
+        // DON'T CARE ABOUT STATE FOR NOW
+        return;
+
+        client(id)
+
+        pubnub.state({
+          channel  : channel,
+          uuid     : id,
+          callback : function(state){client(id).state = state || {}},
+
+          // called lots of times on full room
+          error    : function(m){console.error(m)}
+        });
+      })
+    }
+
+    function handle_presence(m, env){
+      if(m.uuid === self) return;
+      
+      if(m.action === 'join'){
+        client(m.uuid).active = true
+        // client(m.uuid).events.push(['join', time(env[1])]) // here_now won't have this
+
+      } else if(m.action === 'leave' || m.action === 'timeout'){
+        client(m.uuid).active = false
+        client(m.uuid).events.push(['leave', time(env[1])])
+
+      } else {
+        console.log("unhandled presence action", m.action)
+      }
+
+      sync_clients && sync_clients();
+    }
+
+    function handle_message(m, env){
+      if(ignoreMessages) return;
+
+      if(m.action == 'vote'){
+        // protective, don't know the input
+        var c = clients.filter(function(c){
+          return c.id === m.id
+        })[0]
+        if(c) {
+
+          // intro - don't store, let people toggle on/off
+          if(voteToggle){
+            c.voted = !c.voted;  
+            sync_votes && sync_votes()
+
+          // actual questions
+          } else {
+            if(!c.voted){
+              c.events.push(['vote', time(env[1])])
+              c.voted = true;
+              sync_votes()
+            }
+          }
+        }
+      } else if(m.action == 'twitter'){
+        client(m.id).handle = (m.handle||'').replace('@', '').trim()
+
+        sync_twitter && sync_twitter();
+      } else {
+        console.log("unhandled", m); 
+      }
+      // console.log(m, env[1]);
+    }
+
+    function client(id){
+      var c = clients.filter(function(c){
+        return c.id === id
+      })[0]
+
+      return c || (clients.push(c = {id: id, events: [], active: true, voted: false}), c)
+    }
+
+
+
+// 'pubnubish' time
+var pntime = (function(offset){
+
+  // sync now, and again after 5 seconds
+  setTimeout((sync(), sync), 5000)
+
+  return function(){
+    return (+new Date()*10000) - offset;
+  }
+
+  function sync(){
+    PUBNUB.time(function(t){
+      offset = (+new Date()*10000) - t
+    })
+  }
+
+})(0)
+
+
+
+
+
+// Visualisation hooks
+var sync_clients, sync_votes;
+
+
+var teardown;
+
+
+// shared visualisation properties
+var w = 960,
+    h = 540;
+
+
+var avatars = d3.select("#visualisation").append("div")
+      .attr('class','avatars')
+      .style("position", 'absolute')
+      .style('pointer-events','none')
+      .style("width", w + 'px')
+      .style("height", h + 'px');
+
+var vis = d3.select("#visualisation").append("svg")
+      .attr("width", w)
+      .attr("height", h);
+
+
+var gravity_scale = d3.scale.linear()
+  .range([0.01,0.08])
+  .domain([20, 200])
+  // .clamp(true)
+
+var circle_size = d3.scale.linear()
+  .range([30,10])
+  .domain([20, 200])
+  .clamp(true)
+
+var nodes = [],
+    node;
+
+var questionTitle = vis.append('text')
+                        .attr({
+                          'class':'title',
+                          y:40,
+                          x:10
+                        });
+
+
+
+var json_intro = document.getElementById('json-intro');
+
+function vis_text(){
+  remote_section('start')
+
+  d3.select('#url')
+    .style('right','-10px')
+    .transition()
+    .style('opacity',1)
+    .style('right','-10px');
+
+  sync_clients = sync_votes = function(){
+    json_intro.innerText = JSON.stringify(
+      clients.map(function(c){return {id:c.id,voted:c.voted}})
+    , 2, 2)
+  }
+
+
+  sync_clients()
+
+
+}
+
+
+function vis_text_d3(){
+
+
+  var show = function(){
+    json_intro.innerText = JSON.stringify(
+      clients.slice(0,5).map(function(c){return {
+        id:c.id,
+        voted:c.voted,
+        x:Math.round(c.x),
+        y:Math.round(c.y),
+        px:Math.round(c.px),
+        py:Math.round(c.py),
+      }})
+    , 2, 2)
+  }
+
+  var force = d3.layout.force()
+      .nodes(clients)
+      .links([])
+      .gravity(gravity_scale(clients.length))
+      .size([w, h]);
+
+
+  sync_clients = function(){
+    force.start()
+  }
+
+  sync_votes = function(){    
+    show();
+  }
+
+
+  force.on("tick", show);
+
+  sync_clients()
+
+  teardown = function(){
+    force.stop();
+    json_intro.innerText = ''
+  }
+
+}
+
+
+// hook up the circle visualisation
+function vis_circle(){
+
+  if(teardown){teardown(); teardown = null}
+
+  var force = gf = d3.layout.force()
+      .nodes(nodes)
+      .links([])
+      .size([w, h]);
+
+  force.on("tick", function(e) {
+    vis.selectAll("circle")
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+  });
+
+
+  // sync up the ui with the clients
+  sync_clients = function(){
+
+    // TODO - modify force.charge based on length
+
+    // for now, being safe
+    nodes = clients;
+
+    force.nodes(nodes)
+
+    // Restart the layout.
+    force
+      .gravity(gravity_scale(nodes.length))
+      .start();
+
+    vis.selectAll("circle")
+        .data(nodes)
+      .enter().append("circle")
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+        .style("fill", "#ccd6dd");
+
+    vis.selectAll("circle")
+      .style('opacity', function(d){
+        return d.active ? 1 : 0.5
+      })
+      .attr("r", circle_size(nodes.length)) // updating this, there is twitter ramifications
+
+  }
+
+  // if a person has voted or not
+  sync_votes = function(id){
+    vis.selectAll("circle")
+      // .transition()
+      .style('fill', function(d){
+        return d.voted ? '#08f' : '#ccd6dd'
+      })
+  }
+
+
+  teardown = function(){
+    force.nodes(nodes.slice(0))// lock down the nodes
+    force.stop();
+    questionTitle
+      .style('opacity',1)
+      .transition()
+      .style('opacity',0)
+      .remove()
+  }
+
+  // incase we're dealing with test data
+  sync_clients();
+  sync_votes();
+
+}
+
+
+// start the circle vis
+// vis_circle()
+
+
+
+var colors ='#1f77b4 #aec7e8 #ff7f0e #ffbb78 #2ca02c #98df8a #d62728 #ff9896 #9467bd #c5b0d5 #8c564b #c49c94 #e377c2 #f7b6d2 #7f7f7f #c7c7c7 #bcbd22 #dbdb8d #17becf #9edae5'.split(' ');
+
+var vis_labelled; // next step
+
+function vis_timeline(){
+  remote_section('blank')
+
+  // unhook previous vis  
+  if(teardown) teardown();
+  teardown = null;
+
+  // move to static
+  sync_clients = sync_votes = function(){};
+
+
+  var y = d3.scale.linear()
+            .range([20, h-40])
+            .domain([0, nodes.length])
+        
+  vis.selectAll("circle")
+    .data(nodes)
+    .transition()
+      // .duration(250)
+      // .delay(function(d,i){return (i/nodes.length)*1000})
+      .attr("transform", function(d,i) { return "translate(" + 0 + "," + y(i) + ")"; })
+      .attr('r', (y(1)-y(0))/2)
+      .style('fill', '#ccc')
+
+
+  var timestamps = 
+  clients.reduce(function(memo, c){
+    return memo.concat(c.events)
+  },[])
+  .map(function(e){return e[1]})
+  .filter(function(t){return t});
+
+  var x = d3.scale.linear()
+            .range([50,w-50])
+            .domain(d3.extent(timestamps));
+
+  var cross = crossPath()
+            .x(function(d){return x(d[1])})
+            .y(0)
+
+  vis.selectAll("g.client")
+    .data(nodes)
+    .enter()
+      .append('g')
+      .attr('class', 'client')
+      .attr("transform", function(d,i) { return "translate(" + 0 + "," + Math.round(y(i)) + ")"; })
+    .selectAll("path.cross")
+      .data(function(d, i) { return d.events; })
+      .enter()
+        .append('path')
+        .attr('class', 'cross')
+        .attr('d', cross)
+        .style('opacity',0)
+        
+        .transition()
+          .delay(function(d,i,j){return x(d[1]) + (y(j)*2) + 500})
+          .style('opacity',1)
+
+  // vis.selectAll("g")
+  //   .append('line')
+  //   .attr({
+  //     'class':'guide',
+  //     x1:0,
+  //     x2:w,
+  //     y1:0.5,
+  //     y2:0.5
+  //   })
+
+  var questionTime = 
+    d3.scale.linear()
+      .domain(questions.map(function(d){return d.timestamp}))
+      .range(questions.map(function(d,i){return i}))
+      .clamp(true);
+
+  
+  // pour the client votes into the questions
+  questions.forEach(function(q){
+    q.count = 0;
+    q.other = questions.map(function(){return 0;});
+  })
+
+  var c,i,j,events;
+  for (var c = clients.length - 1; c >= 0; c--) {
+
+    events = clients[c].events.map(function(e){return Math.floor(questionTime(e[1]))});
+
+    for(var i =0; i < events.length; i++){
+      questions[events[i]].count ++;
+
+      for(var j = i+1; j < events.length; j++){
+        questions[events[i]].other[events[j]]++
+        questions[events[j]].other[events[i]]++
+      }
+    }
+
+  };
+
+  // var labelStart = time(pntime()) + 200000;
+  vis_labelled = function(){
+
+
+
+
+
+    var labels = vis.selectAll("g.label")
+      .data(questions)
+      .enter()
+        .append('g')
+        .attr('class', 'label')
+        .attr('transform', function(d){return 'translate(' + x(d.timestamp) + ",0)"});
+
+    
+    labels
+      .append('text')
+        .text(function(d){return d.label})
+        // .attr('y', h - 20)
+        // .attr('transform', function(d){ return 'translate(0,'+(h - 20+') rotate(90)'})
+        .attr('transform', function(d){ return 'rotate(90)'})
+        
+
+    labels
+      .append('line')
+      .attr({
+        x1:0,
+        y1:0,
+        x2:0,
+        y2:h
+      })
+
+    vis.selectAll("g.client .cross")
+      .style('stroke',function(x){return colors[Math.floor(questionTime(x[1]))]})
+
+  }
+
+}
+
+// &;times; path generator
+function crossPath(){
+
+  var x,y, radius = 5;
+  x = y = function(i){return i}
+
+  var path = function(d){
+    var _x = x(d), _y = y(d);
+    return [
+      'M', _x-radius,',', _y-radius,
+      'L', _x+radius,',', _y+radius,
+      'M', _x+radius,',', _y-radius,
+      'L', _x-radius,',', _y+radius,
+    ].join('')
+  }
+
+  path.x = function(_){
+    if (!arguments.length) return x;
+    x = typeof _ === "function" ? _ : function(){return _};
+    return path
+  }
+
+  path.y = function(_){
+    if (!arguments.length) return y;
+    y = typeof _ === "function" ? _ : function(){return _};
+    return path
+  }
+
+  path.radius = function(_){
+    if (!arguments.length) return radius;
+    radius = _
+    return path;
+  }
+
+  return path;
+}
+
+
+var label_width = 120;
+
+function vis_bars(){
+
+  // remove the crosses
+  vis.selectAll("g.client")
+    .attr('opacity',1)
+    .transition()
+    .attr('opacity',0)
+    .remove()
+
+  // move the nodes off top left
+  vis.selectAll("circle")
+    .data(nodes)
+    .transition()
+      .attr("transform", "translate(-10,-10)")
+      .attr("r", 10)
+
+
+  // straighten up the bars
+  var x = d3.scale.linear()
+          .range([10,w-10])
+          .domain([0, questions.length])
+
+  vis.selectAll("g.label")
+    .transition()
+    .duration(1000)
+    .attr('transform', function(d,i){return 'translate(' + x(i) + ",0)"})
+
+  vis.selectAll("g.label text")
+    .transition()
+    .attr('transform', function(d){ return 'translate(0,'+(h - label_width)+') rotate(90)'})
+
+  // remove lines
+  vis.selectAll("g.label line")
+    .transition()
+    .duration(1000)
+    .attr('y1',h)
+
+  // append bars
+  var barWidth = x(1) - x(0);
+
+  var barHeight = d3.scale.linear()
+            .range([0,h-label_width]) // 50 top and bottom kind of
+            .domain([0,d3.max(questions.map(function(q){return q.count}))])
+
+  vis.selectAll("g.label")
+    .append("rect")
+    .attr("class", "bar")
+    .attr("width", 0)
+    .attr("height", function(d){    return barHeight(d.count) })
+    .attr("y",      function(d){    return h - label_width - barHeight(d.count) })
+    .attr('fill',   function(d,i){  return colors[i]})
+    .transition()
+    .duration(1000)
+    .delay(function(d,i){return i * 200})
+    .attr("width", barWidth)
+
+
+
+    // .attr('height', 100)
+// 
+}
+
+
+// the width of the labels
+var label_padding = 120,s_width;
+
+function vis_comparison(){
+
+  // remove accidentally added questions, just in case I screwed up something
+  questions = questions.filter(function(q){return q.other});
+
+
+  var size = Math.min(w,h) - label_padding;
+
+  var s_x = d3.scale.linear()
+                  .range([0, size])
+                  .domain([0, questions.length])
+
+  var s_y = s_x.copy()
+                  .domain([questions.length-1, -1])
+
+  s_width = (s_x(1)-s_x(0));//*0.95;
+
+
+  // line up the existing
+  vis.selectAll("g.label")
+    .transition()
+    .duration(1000)
+    .attr('transform', function(d,i){return 'translate(' + s_x(i) + ",0)"})
+    .select('rect.bar')
+      .transition()
+      .attr({
+        width:  s_width,
+        height: s_width,
+        y:      function(d,i){return s_y(i)},
+        fill:   '#ccc'
+      })
+
+
+  var values = questions.reduce(function(a,b){return a.concat(b.other || [])},[]).filter(function(i){return i > 0})
+
+  var c = d3.scale.linear()
+              .domain(d3.extent(values))
+              .range(["#74c476","#00441b"])
+
+
+
+  var opacity = d3.scale.linear()
+              .domain(d3.extent(values))
+              .range([0,1])
+
+
+
+  vis
+    .selectAll("g.label")
+    .selectAll('rect.compare')
+
+    .data(function(d){return d.other || []})
+    .enter()
+      .append('rect')
+      .attr({
+        'class': 'compare',
+        width:   s_width,
+        height:  s_width,
+        y:       function(d,i,j){return s_y(i)}
+      })
+      .attr('fill', function(d){return c(d)})
+      .style('opacity', 0)
+      .transition()
+        .delay(function(d,i,j){return 2500 + (i*50) + (j*50)})
+        .style('opacity', function(d,i,j){return i < j ? 1 : 0})
+
+
+
+  vis.selectAll('text.vlabel')
+      .data(questions)
+      .enter()
+      .append('text')
+      .attr('class','vlabel')
+
+      .attr('x',w)
+      .attr('y',function(d,i){return s_y(i-1)})
+      .text(function(d){return d.label})
+      .transition()
+      .delay(2000)
+      .attr('x',s_x(questions.length))
+
+
+}
+
+
+
+// setTimeout(vis_timeline, 1000)
+
+
+var sync_twitter;
+
+
+function vis_twitter(){
+  remote_section('twitterForm');
+
+  // remove labels
+  vis.selectAll("g.label text, text.vlabel")
+          .transition()
+          .duration(1000)
+          .attr({x:w,y:h, transform:''})
+
+
+
+  vis.selectAll("g.label rect")
+      .transition()
+      .delay(2000)
+      // .duration(500)
+      .attr({
+        width: function(d,i){return (i % 2) ? 0 : s_width},
+        height:function(d,i){return ((i+1) % 2) ? 0 : s_width},
+      })
+
+  // move the circles back in
+  setTimeout(function(){
+    vis
+      .selectAll("circle")
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      .attr('r',0)
+      .transition()
+      .delay(function(d,i){return (2000/clients.length)*i})
+      .attr("r", circle_size(nodes.length))
+
+    // restart the force (will be calling update back in the other thing, which is weird)
+    gf.start()
+  }, 2500)
+
+  sync_twitter = function(){
+
+    // set the ui
+    // vis.selectAll("circle")
+    //     .style('fill', function(c){
+    //       return c.twitter_bg ? '#' + c.twitter_bg ? (c.handle?'#55acee':'#ccd6dd')
+    //     })
+
+    vis.selectAll("circle")
+        .style('fill', function(c){
+          return c.twitter_bg ? '#' + c.twitter_bg : (c.handle?'#55acee':'#ccd6dd')
+        })
+
+/*
+    avatars
+      .selectAll('.avatar')
+      .data(clients.filter(function(c){
+        return c.twitter_image
+      }))
+      .enter()
+      .append('div')
+        .attr('class', 'avatar');
+
+
+    avatars
+      .selectAll('.avatar')
+        // .style("transform", function(d) { return "translate(" + d.x + "px," + d.y + "px)"; })
+        .style("transform", function(d) { return "translate(-30px,-30px)"; })
+        .style("background-image", function(d) { return "url(" + d.twitter_image + ")"; })
+        // .style("width", '20px')
+        // .style("height", '20px')
+        // .style("left", '-10px')
+        // .style("top", '-10px')
+
+*/
+
+
+  }
+
+
+// avatars
+//     .selectAll('.avatar')
+//     .style("transform", function(d) { return "translate(" + d.x + "px," + d.y + "px)"; })
+
+
+
+}
+
+
+var tweeps, twitter_step, twitterers;
+
+
+function vis_twitter_followers(){
+
+
+  twitterers = clients.filter(function(c){return c.twitter_count !== undefined})
+
+  var padding = circle_size(twitterers.length)
+
+  // following (x) -->
+  var following = d3.scale.log()
+            .range([padding, w-padding])
+            .domain(d3.extent(twitterers.map(function(c){return c.twitter_following})))
+
+  // followers (y) ^
+  var followers = d3.scale.log()
+            .range([h-padding, padding])
+            .domain(d3.extent(twitterers.map(function(c){return c.twitter_followers})))
+
+
+  // tweets (scale)
+  var count = d3.scale.linear()
+            .range([.5, 2])
+            .domain(d3.extent(twitterers.map(function(c){return c.twitter_count})))
+
+  // sync up just in case
+  tweeps = avatars
+    .selectAll('.avatar')
+    .data(twitterers);
+
+  tweeps
+    .enter()
+      .append('div')
+      .attr('class', 'avatar')
+      .style("transform", function(d) { return "translate(" + d.x + "px," + d.y + "px)"; })
+      .style("background-image", function(d) { return "url(" + d.twitter_image + ")"; })
+      .style("width", (circle_size(nodes.length)*2)+'px')
+      .style("height", (circle_size(nodes.length)*2)+'px')
+      .style("left", (circle_size(nodes.length)*-1)+'px')
+      .style("top", (circle_size(nodes.length)*-1)+'px');
+
+  tweeps
+    .exit()
+      .remove();
+
+
+
+  // do the stuff
+
+  // remove circles
+  vis.selectAll('circle').transition().attr('r',0).remove()
+
+  // add transitions class
+  tweeps
+    .attr('class', 'avatar trans')
+
+
+  var steps = [
+    // function(){
+    //   // show images
+    //   tweeps
+    //     .style("background-image", function(d) { return "url(" + d.twitter_image + ")"; })
+    // },
+    function(){  
+      // line along middle
+      tweeps
+        .style("transform", function(d, i) { return "translate3d(" + w*((i+0.5)/twitterers.length) + "px," + h/2 + "px,0)"; })
+    },
+    function(){
+      // twitter followers up
+      tweeps
+        .style("transform", function(d, i) { return "translate3d(" + w*((i+0.5)/twitterers.length) + "px," + followers(d.twitter_followers) + "px,0)"; })
+    },
+    function(){
+      // twitter following right
+      tweeps
+        .style("transform", function(d, i) { return "translate3d(" + following(d.twitter_following) + "px," + followers(d.twitter_followers) + "px,0)"; })
+    },
+    function(){
+      // size by tweet count
+      tweeps
+        .style("transform", function(d, i) { return "translate3d(" + following(d.twitter_following) + "px," + followers(d.twitter_followers) + "px,0) scale("+count(d.twitter_count)+")"; })
+    }
+  ];
+
+  twitter_step = function(){
+    var fn = steps.shift();
+    return fn ? 
+              fn() : 
+              {finished: true}
+  }
+
+}
+
+
+
+var link, tweet_force;
+
+function vis_twitter_final(){
+
+  // reinstate the force
+  tweet_force = d3.layout.force()
+      .nodes(twitterers)
+      .gravity(gravity_scale(twitterers.length))
+      .links([])
+      .size([w, h]);
+
+  tweet_force.start()
+  for (var i = 0; i < 40; ++i) tweet_force.tick();
+  tweet_force.stop();
+
+  tweeps
+      .style("transform", function(d) { return "translate3d(" + d.x + "px," + d.y + "px,0)"; });
+
+
+
+  link = vis.selectAll("line.link").data([]);
+
+  // after they've transitioned in
+  setTimeout(function(){
+    tweeps
+      .attr('class', 'avatar')
+
+    tweet_force.on("tick", function(e) {
+      tweeps
+          .style("transform", function(d) { return "translate3d(" + d.x + "px," + d.y + "px,0)"; });
+
+      link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+    });
+
+    tweet_force.start();
+
+  }, 1000)
+
+
+
+
+
+  // AT SOME POINT
+
+  // remote_section('twitterVis')
+
+
+
+}
+
+
+function connect_firebase(){
+
+
+  // Submit the clients to firebase
+  var fb_data = twitterers.map(function(client){
+    return {
+      id_str:            client.id_str,
+      handle:            client.handle,
+      twitter_bg:        client.twitter_bg,
+      // twitter_count:     client.twitter_count,
+      // twitter_followers: client.twitter_followers,
+      twitter_image:     client.twitter_image
+    }
+  }).reduce(function(memo, client){
+    if(client.handle) memo[client.handle] = client
+    return memo
+  }, {})
+
+  ayb.child('users').set(fb_data)
+
+
+  tweeps.transition().style('opacity',0.4)
+
+  // have we heard from the other process?
+  var hi;
+  function hear(){
+    if(hi) return;
+    hi = true;
+
+    tweet_force
+      .linkDistance(w/10)
+      .gravity(gravity_scale(twitterers.length)*0.9).start()
+
+    tweeps
+      .transition()
+      .delay(function(d,i){return (2000/twitterers.length)*i})
+      .style('opacity',1)
+      .style('width','20px')
+      .style('height','20px')
+      .style('left','-10px')
+      .style('top','-10px')
+  }
+
+
+
+  // respond to firebase links
+
+  var d3cache = {};
+
+  twitterers.forEach(function(t){
+    if(t.handle)
+      d3cache[t.handle] = t;
+  })
+
+  //child_added
+  ayb.child('links').on('value', function (snapshot) {
+    hear()
+    var value = snapshot.val();
+    console.log(value)
+
+    var links = [];
+
+    for(var p in value){
+      if(value.hasOwnProperty(p)){
+        var parts = p.split(' '),
+
+        a = d3cache[parts[0]],
+        b = d3cache[parts[1]];
+
+        if(a && b)
+          links.push({
+            source: a, 
+            target: b
+          })
+      }
+    }
+
+    link = link
+          .data(links);
+
+    link
+      .enter().append("line").attr('class','link');
+
+    link
+      .exit().remove();
+
+    tweet_force.links(links).start()
+
+  })
+
+
+}
+
+
+
+function connect_firebase_public(){
+  remote_section('twitterVis')
+}
+
+
+
+
+
+
+
+var questionPadd = 1500;
+
+function question(text, label){
+
+  // we don't want the url anymore
+
+  var url = document.getElementById('url');
+  if(url){
+    d3.select(url).transition().style('opacity',0).style('right','-10px').remove()
+  }
+
+
+  // we're persisting votes now
+  voteToggle = false;
+
+  // but ignore for the duration of this
+  ignoreMessages = true;
+
+  var delay = 2000/clients.length;
+
+  vis.selectAll("circle")
+    .transition()
+    .duration(questionPadd/3)
+    .attr('r',circle_size(clients.length)/5)
+
+  vis.selectAll("circle")
+    .transition()
+    .delay((questionPadd/3)*2)
+    .duration(questionPadd/3)
+    .attr('r',circle_size(clients.length))
+
+  setTimeout(function(){
+    // halfway
+    questionTitle.text(text);
+
+    // register the question
+    questions.push({
+      title: text,
+      label: label,
+      timestamp: time(pntime())
+    });
+
+    clients.forEach(function(c){
+      c.voted = false;
+    })
+
+    sync_votes()
+  }, questionPadd/2)
+
+
+
+  setTimeout(function(){
+    // all way
+    ignoreMessages = false;
+  },questionPadd)
+
+
+  
+
+}
+
+
+
+// function hide_vote_input(){
+//   pubnub.publish({
+//     channel: channel_public,
+//     message: {
+//       action:'hide-votes',
+//     }
+//   })
+// }
+
+
+
+// function show_twitter_input(){
+//   pubnub.publish({
+//     channel: channel_public,
+//     message: {
+//       action:'show-twitter',
+//     }
+//   })
+// }
+
+
+function remote_section(name){
+    pubnub.publish({
+    channel: channel_public,
+    message: {
+      section: name
+    }
+  })
+}
+
+
+function request_twitter_handles(){
+
+  var uniq = {};
+
+  // up to 1500 users
+  for(var i = 0; i < 15; i++){
+    if(request100())
+      break;
+  }
+
+
+  function request100(){
+
+    var handles = clients.filter(function(c){
+      return c.handle && 
+        (c.handle = c.handle.replace('@', '').trim()) && // normalise handles
+        !c.twitter_requested && !c.twitter_image;
+    })
+    .filter(function(c){
+      return uniq[c.handle] ? false : 
+             uniq[c.handle] = true;
+    })
+    .slice(0, 100)
+    .map(function(c){
+      c.twitter_requested = true;
+      return c.handle;
+    });
+
+    if(handles.length === 0){
+      console.log("done!", handles)
+      return true
+    }
+
+    console.log("requesting", handles)
+
+    if(handles.length){
+      reqwest({
+        method:'post',
+        url:'/twitter_handles',
+        data:{handles:handles}}
+      ).then(function(response){
+        if(response.error){
+          console.error(response);
+          document.body.classList.add('error')
+        } else {
+
+          response.forEach(function(twitter_data){
+
+            // find the coinciding client(s)
+            var m = clients.filter(function(c){
+              return c.handle === twitter_data.screen_name
+            });
+
+            m.forEach(function(c){
+              c.twitter_requested = true; // just incase of duplicates
+
+              c.twitter_image     = twitter_data.profile_image_url;
+              c.twitter_bg        = twitter_data.profile_background_color;
+              c.twitter_count     = twitter_data.statuses_count;
+              c.twitter_followers = twitter_data.followers_count;
+              c.twitter_following = twitter_data.friends_count;
+              c.id_str            = twitter_data.id_str
+            })
+
+            if(!m.length){
+              console.log("COULDNT ASSIGN", twitter_data)
+            }
+
+          })
+
+          sync_twitter && sync_twitter();
+        }
+      })
+    }
+
+
+  }
+
+
+}
+
+
+
+
+/* Debug things */
+
+
+var debug = {
+  i:0,
+  addClients: function(n){
+    n = n || 1
+    for(var i = 0; i < n; i++){
+
+      this.delay(this.i + '-dev', function(id){
+        handle_presence({
+          action:'join',
+          uuid: id
+        },[null, pntime()])
+      })
+      this.i++;
+    }
+  },
+  vote: function(p){
+    for(var i = 0; i < this.i; i++){
+      if(Math.random() < p)
+        this.delay(i + '-dev', function(id){
+          handle_message({
+            action:'vote',
+            id: id
+          },[null, pntime()])
+        })
+    }
+  },
+  delay: function(arg, fn){
+    setTimeout(fn, Math.random()*100, arg)
+  },
+  assign_handles: function(){
+
+    var hs = "@quovixi @AndrewDBate @navnavnavnavnav @lukeareid @mandrillapp @BLinseyBloom @urlsangel @SyHolloway @RobRandell @jquk @thedataoverload @ProjectDavis @PhilPeirsegaele @mr_r_miller @chriscookwd @prcjac @bmcgavin @beckyjtweets @davestheraves @oxfordtimes @bytemark @jamandstring @temporalwave @oliverGristDev @acrmp @FutureIntellige @neverontarget @mchoen @leijou @fceller @pighoof @paulbarrett79 @tdp_org @Justajourno @fazy @redbadgerteam @lizconlan @ydbendasan @jazlalli1 @WhiteOctober @zenkay @MikeMagee111 @MySQL @peterjwest @spriggsdavid @symroe @stevegreenslade @thegenielab @SparrowhawkMMU @atechmedia @burtonash @Daveawb @cloudant @sherred @sarahotoole007 @rogue_michael @joewass @mightjustwork @CarlJWood @jackhayter @billybixby @jmsharker @Thiago_Gouvea @dubaussi @Dean_Faulkner @steppenwells @randommood @johnwards @monicams @rich_81 @4foot30 @martinkl @MWilcoxson @harringr @Yammer @googlecloud @darkgreener @Drarok @josnow @fulljames @iainemsley @karlward @ctjones @hayres @stevecarpenter @dafletcher @elenore @benjaminbenben @ghickman @rjmunro @davbo @olorton @perksc @kal_ahmed @dwynne @jturnbull @ArthurGuy @adamcooke @girlie_mac @davenolan @newint @Thayer @oniryx @basho @winjer @Oracle @j4mie @chrishawes @gbilder @garrettc @phuly @mrchrisadams @redheat".split(' ')
+
+
+    clients.forEach(function(c){
+
+      // purposefully some bad handles
+      if(!c.handle)
+        c.handle = hs[Math.floor(Math.random()*hs.length*1.3)];
+    })
+
+
+    sync_twitter()
+
+  }
+}
+
+// setTimeout(function(){
+//   debug.addClients(30); 
+// },200)
+
+// setTimeout(function(){
+//   debug.vote(0.5);
+// },500)
+
+function dev_script(){
+
+  [
+
+    [100, function(){
+      debug.addClients(10);
+      vis_text()
+      debug.addClients(3);
+    }],
+
+    [100, function(){
+      vis_text_d3()
+      debug.addClients(3);
+    }],
+
+
+    [100, function(){
+      vis_circle()
+    }],
+
+    [100, function(){
+      questionPadd = 100;
+
+      debug.addClients(10);
+      debug.vote(0.6);
+    }],
+    [400, function(){
+      debug.addClients(4);
+      debug.vote(0.6);
+    }],
+    [100, function(){
+      debug.addClients(20);
+      debug.vote(0.6);
+    }],
+    [500, function(){
+      question("Is this thing on?", "hello")
+    }],
+    [100, function(){
+      debug.vote(1);
+    }],
+    [1000, function(){
+      question("Who likes breakfast", "breakfast")
+    }],
+    [100, function(){
+      debug.vote(0.2);
+    }],
+    [1000, function(){
+      question("Who likes beer", "beer")
+    }],
+    [100, function(){
+      debug.vote(0.8);
+    }],
+    [1000, function(){
+      question("Who likes bears", "bears")
+    }],
+    [100, function(){
+      debug.vote(0.9);
+    }],
+
+/*
+    [500, function(){
+      question("Is this thing on?", "hello")
+    }],
+    [100, function(){
+      debug.vote(1);
+    }],
+    [1000, function(){
+      question("Who likes breakfast", "breakfast")
+    }],
+    [100, function(){
+      debug.vote(0.2);
+    }],
+    [1000, function(){
+      question("Who likes beer", "beer")
+    }],
+    [100, function(){
+      debug.vote(0.8);
+    }],
+    [1000, function(){
+      question("Who likes bears", "bears")
+    }],
+    [100, function(){
+      debug.vote(0.9);
+    }],
+
+
+    [500, function(){
+      question("Is this thing on?", "hello")
+    }],
+    [100, function(){
+      debug.vote(1);
+    }],
+    [1000, function(){
+      question("Who likes breakfast", "breakfast")
+    }],
+    [100, function(){
+      debug.vote(0.2);
+    }],
+    [1000, function(){
+      question("Who likes beer", "beer")
+    }],
+    [100, function(){
+      debug.vote(0.8);
+    }],
+    [1000, function(){
+      question("Who likes bears", "bears")
+    }],
+    [100, function(){
+      debug.vote(0.9);
+    }],
+*/
+    // [500, function(){
+    //   debug.vote(0.4);
+    // }],
+    // [500, function(){
+    //   debug.vote(1);
+    // }],
+    [700, function(){
+      vis_timeline()
+    }],
+    [500, function(){
+      vis_labelled()
+    }] ,
+    [1000, function(){
+      vis_bars()
+    }]
+
+
+
+  ].reduce(function(time, item){
+    time+=(item[0] || 0)
+    if(item[1])
+      setTimeout(item[1], time);
+    return time;
+  },0)
+
+}
+  </script>
+</body>
+</html>
