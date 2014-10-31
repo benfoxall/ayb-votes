@@ -22,6 +22,13 @@ for adding streaming data, and sharing with clients
 * `FIREBASE_AUTH_TOKEN`
 * `your-firebase.firebaseio.com`
 
+---
+
+you can also run some debug stuff without any keys,  launch the talk (see below) and click "dev script" to run through a list of steps.
+
+Or manually: `text`, `add 20`, `vote 0.5`, `text d3`, `add 20`, `circles`, `vote 0.5`, {`hello`, `vote 0.2`}*, `timeline`, `labelled`, `bars`, `comparison`, `twitter`, `assign handles`, [here on, you need twitter keys], `request (50) handles`, `twitter followers step`,`twitter followers step`,`twitter followers step`, `twitter final`, [here on, you need firebase], `connectFB`, `connectFB Public`.
+
+
 
 ### The talk
 
